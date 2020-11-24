@@ -6,8 +6,8 @@ class BinaryTree:
         self.leftChild = None # reference to a left node
         self.rightChild = None # reference to a right node
         self.parent = None
-        BinaryTree.searchState = None
-        BinaryTree.getterState = None
+        BinaryTree.searchState = False
+        BinaryTree.getterState = False
         BinaryTree.foundResult = False
     def getLeftChild(self):
         return self.leftChild 
@@ -25,7 +25,7 @@ class BinaryTree:
             self.leftChild.parent = self # adding parent references
         else:
             newLeft = BinaryTree(obj)
-            newLeft.left = self.leftChild 
+            newLeft.leftChild = self.leftChild 
             self.leftChild.parent = newLeft # must assign two new parent references
             newLeft.parent = self
             self.leftChild = newLeft
@@ -37,7 +37,7 @@ class BinaryTree:
             self.rightChild.parent = self
         else:
             newRight = BinaryTree(obj)
-            newRight.right = self.rightChild
+            newRight.rightChild = self.rightChild
             self.rightChild = newRight
     # here are our traversal methods
     def bookTraverse(self):
@@ -49,8 +49,10 @@ class BinaryTree:
         """
         if BinaryTree.searchState == True and BinaryTree.searchItem == self.key:
             BinaryTree.foundResult = True 
+            return
         if BinaryTree.getterState == True and BinaryTree.searchItem == self.key:
             BinaryTree.foundResult = self 
+            return
             # here, BinaryTree.foundResult will be a BinaryTree instance itself
         if self.getLeftChild():
             self.leftChild.bookTraverse()
@@ -68,8 +70,10 @@ class BinaryTree:
             self.rightChild.revDepthTraverse()
         if BinaryTree.searchState == True and BinaryTree.searchItem == self.key:
             BinaryTree.foundResult = True 
+            return 
         if BinaryTree.getterState == True and BinaryTree.searchItem == self.key:
             BinaryTree.foundResult = self  
+            return
     def revWidthTraverse(self):
         """
         top to bottom, but right to left
@@ -78,8 +82,10 @@ class BinaryTree:
         """
         if BinaryTree.searchState == True and BinaryTree.searchItem == self.key:
             BinaryTree.foundResult = True 
+            return 
         if BinaryTree.getterState == True and BinaryTree.searchItem == self.key:
             BinaryTree.foundResult = self 
+            return 
         if self.getRightChild():
             self.rightChild.revWidthTraverse()
         if self.getLeftChild():
@@ -96,8 +102,10 @@ class BinaryTree:
             self.leftChild.revDepWidthTraverse()
         if BinaryTree.searchState == True and BinaryTree.searchItem == self.key:
             BinaryTree.foundResult = True 
+            return
         if BinaryTree.getterState == True and BinaryTree.searchItem == self.key:
             BinaryTree.foundResult = self 
+            return
     def triangleTraverse(self):
         """
         traversal looks like a triangle:
@@ -107,13 +115,15 @@ class BinaryTree:
         """
 
         if self.getLeftChild():
-            self.getLeftChild().triangleTraverse()
+            self.leftChild.triangleTraverse()
         if BinaryTree.searchState == True and BinaryTree.searchItem == self.key:
-            BinaryTree.foundResult = True 
+            BinaryTree.foundResult = True
+            return 
         if BinaryTree.getterState == True and BinaryTree.searchItem == self.key:
             BinaryTree.foundResult = self 
+            return
         if self.getRightChild():
-            self.getRightChild().triangleTraverse()
+            self.rightChild.triangleTraverse()
 
     def revTriangleTraverse(self):
         """
@@ -130,17 +140,19 @@ class BinaryTree:
         
         if BinaryTree.searchState == True and BinaryTree.searchItem == self.key:
             BinaryTree.foundResult = True 
+            return
             # since we're using recursion with instances of classes, things 
             # get very messy if we try to do a simple return statment
             # so instead, I used static variables that change based on 
         if BinaryTree.getterState == True and BinaryTree.searchItem == self.key:
             BinaryTree.foundResult = self 
+            return
             # here, BinaryTree.foundResult will be a BinaryTree instance itself
 
         if self.getLeftChild():
             self.leftChild.revTriangleTraverse() # recursive aspect
 
-    def search(self, item, traverseMethod=bookTraverse):
+    def search(self, item, traverseMethod=None):
         """
         search works by actually running through whichever traversal method we choose
         Then, inside those traversal methods, static variable BinaryTree.foundResult is changed
@@ -160,10 +172,24 @@ class BinaryTree:
         BinaryTree.searchState = True
         BinaryTree.getterState = False
         BinaryTree.searchItem = item
-        traverseMethod()
+        if traverseMethod == 'bookTraverse':
+            self.bookTraverse()
+        elif traverseMethod == 'revDepthTraverse':
+            self.revDepthTraverse()
+        elif traverseMethod == 'revWidthTraverse':
+            self.revWidthTraverse()
+        elif traverseMethod == 'revDepWidthTraverse':
+            self.revDepWidthTraverse()
+        elif traverseMethod == 'triangleTraverse':
+            self.triangleTraverse()
+        elif traverseMethod == 'revTriangleTraverse':
+            self.revTriangleTraverse()
+        elif traverseMethod == None: # default 
+            self.bookTraverse()
+        
         return BinaryTree.foundResult
     
-    def get(self, item, traverseMethod=bookTraverse):
+    def get(self, item, traverseMethod=None):
         """
         Get works by actually running through whichever traversal method we choose
         Then, inside those traversal methods, static variable BinaryTree.foundResult is changed
@@ -183,7 +209,20 @@ class BinaryTree:
         BinaryTree.searchState = False
         BinaryTree.getterState = True
         BinaryTree.searchItem = item
-        traverseMethod()
+        if traverseMethod == 'bookTraverse':
+            self.bookTraverse()
+        elif traverseMethod == 'revDepthTraverse':
+            self.revDepthTraverse()
+        elif traverseMethod == 'revWidthTraverse':
+            self.revWidthTraverse()
+        elif traverseMethod == 'revDepWidthTraverse':
+            self.revDepWidthTraverse()
+        elif traverseMethod == 'triangleTraverse':
+            self.triangleTraverse()
+        elif traverseMethod == 'revTriangleTraverse':
+            self.revTriangleTraverse()
+        elif traverseMethod == None: # default 
+            self.bookTraverse()
         return BinaryTree.foundResult
         
     def __repr__(self):
@@ -203,11 +242,11 @@ if __name__ == '__main__':
     bt.rightChild.insertRight('r.r')
     bt.rightChild.rightChild.insertRight('r.r.r')
     print('testing search methodology')
-    print(bt.search(item='l.l.l', traverseMethod=bt.bookTraverse)) # True
-    print(bt.search(item='l.l.l', traverseMethod=bt.revDepthTraverse))
-    print(bt.search(item='l.l.l', traverseMethod=bt.revWidthTraverse))
-    print(bt.search(item='l.l.l', traverseMethod=bt.revDepWidthTraverse))
-    print(bt.search(item='l.l.l', traverseMethod=bt.triangleTraverse))
-    print(bt.search(item='l.l.l', traverseMethod=bt.revTriangleTraverse)) # True
-    print(bt.search(item='sadlkjfsdalkfjh', traverseMethod=bt.revTriangleTraverse)) # False
-    print(bt.get(item='l.l', traverseMethod=bt.revTriangleTraverse)) # returns tree
+    print(bt.search(item='l.l.l', traverseMethod='bookTraverse')) # True
+    print(bt.search(item='l.l.l', traverseMethod='revDepthTraverse'))
+    print(bt.search(item='l.l.l', traverseMethod='revWidthTraverse'))
+    print(bt.search(item='l.l.l', traverseMethod='revDepWidthTraverse'))
+    print(bt.search(item='l.l.l', traverseMethod='triangleTraverse'))
+    print(bt.search(item='l.l.l', traverseMethod='revTriangleTraverse')) # True
+    print(bt.search(item='sadlkjfsdalkfjh', traverseMethod='revTriangleTraverse')) # False
+    print(bt.get(item='l.l', traverseMethod='revTriangleTraverse')) # returns tree
