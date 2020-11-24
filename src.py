@@ -186,7 +186,8 @@ class BinaryTree:
             self.revTriangleTraverse()
         elif traverseMethod == None: # default 
             self.bookTraverse()
-        
+        else:
+            print('unrecognized method passed')
         return BinaryTree.foundResult
     
     def get(self, item, traverseMethod=None):
@@ -223,6 +224,8 @@ class BinaryTree:
             self.revTriangleTraverse()
         elif traverseMethod == None: # default 
             self.bookTraverse()
+        else:
+            print('unrecognized method passed')
         return BinaryTree.foundResult
         
     def __repr__(self):
@@ -250,3 +253,4 @@ if __name__ == '__main__':
     print(bt.search(item='l.l.l', traverseMethod='revTriangleTraverse')) # True
     print(bt.search(item='sadlkjfsdalkfjh', traverseMethod='revTriangleTraverse')) # False
     print(bt.get(item='l.l', traverseMethod='revTriangleTraverse')) # returns tree
+    print(bt.search(item='l.l.l', traverseMethod='revDepthTrasdfsadfaverse'))
